@@ -4,11 +4,11 @@ import kimstar from "@/public/assets/kimstar.jpeg";
 export default function Home() {
   return (
     <>
-      <main className="min-h-screen bg-[#fffe92] flex items-center justify-center px-4 py-10">
-        <div className="relative w-full max-w-4xl overflow-hidden rounded-4xl border-[6px] border-[#252849] bg-[#FFFDF5] shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+      <main className="min-h-screen bg-[#F1F0EC] flex items-center justify-center px-4 py-10">
+        <div className="relative w-full max-w-4xl overflow-hidden rounded-4xl border-[6px] border-[#F1F0EC] bg-[#FFFDF5] shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
           {/* 상단 클립보드 */}
           <div className="pointer-events-none absolute -top-7 left-1/2 z-20 -translate-x-1/2">
-            <div className="h-9 w-28 rounded-t-3xl border-[6px] border-b-0 border-[#252849] bg-[#1C2138]" />
+            <div className="h-9 w-28 rounded-t-3xl border-[6px] border-b-0 border-[#F1F0EC] bg-[#F1F0EC]" />
           </div>
 
           {/* 배경 패턴 & 장식 */}
@@ -106,7 +106,8 @@ export default function Home() {
                     <p className="text-[11px] uppercase tracking-wide">협업</p>
                     <ul className="mt-1 space-y-0.5">
                       <li>GIT / SVN</li>
-                      <li>Figma / Zeplin / Notion / Jira / Slack</li>
+                      <li>Figma / Zeplin / Photoshop</li>
+                      <li>Notion / Jira / Slack</li>
                     </ul>
                   </div>
                   <div className="rounded-[20px] border-[3px] border-[#252849] bg-[#FFE9B8] px-3 py-3 text-xs font-semibold text-[#252849] shadow-[0_5px_0_#252849]">
@@ -128,26 +129,26 @@ export default function Home() {
                 {/* 연구 스케줄 */}
                 <div className="rounded-3xl border-4 border-[#252849] bg-white px-4 py-4 text-xs text-[#252849] shadow-[0_8px_0_#252849]">
                   <div className="mb-2 flex items-center justify-between">
-                    <p className="text-sm font-extrabold">김별이 연구소 이력</p>
+                    <p className="text-sm font-extrabold">연구소 이력</p>
                     <span className="rounded-full bg-[#FFDF6F] px-2 py-0.5 text-[10px] font-semibold">
                       청강문화산업대학교 (2015. 03 ~ 2017. 02) 스마트폰 전공
                       졸업
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-[11px]">
-                    <div className="rounded-[14px] bg-[#FF8BC2] px-2 py-2 text-white">
+                    <div className="rounded-[14px] bg-[#DBD3DC] px-2 py-2 text-black">
                       <p className="font-bold">노드게임즈 (2023.03~2025.12)</p>
                       <p>아트팀 소속 </p>
                       <p>웹 프론트엔드 개발 및 퍼블리싱 리드</p>
                     </div>
-                    <div className="rounded-[14px] bg-[#63B7FF] px-2 py-2 text-white">
+                    <div className="rounded-[14px] bg-[#DBD3DC] px-2 py-2 text-black">
                       <p className="font-bold">
                         디자인교과서 (2020.11 ~ 2022.05)
                       </p>
                       <p>프론트엔드1팀 소속</p>
                       <p>카페24 고도몰 기반 쇼핑몰 웹 퍼블리싱</p>
                     </div>
-                    <div className="rounded-[14px] bg-[#7FD6B7] px-2 py-2 text-white">
+                    <div className="rounded-[14px] bg-[#DBD3DC] px-2 py-2 text-black">
                       <p className="font-bold">게임 QA</p>
                       <p>D 게임 회사 (2019.06 ~ 2020.03)</p>
                       <p>S 게임 회사 (2017.01 ~ 2019.01)</p>
@@ -182,7 +183,7 @@ export default function Home() {
 
             {/* 하단 한 줄 */}
             <section className="mt-7 flex flex-wrap items-center justify-between gap-2 text-[10px] text-[#252849]/80">
-              <p>#꼼꼼함 #실행력 #게임좋아함 #덕후</p>
+              <p>#긍정 #실행력 #친화력</p>
               <p>모든 실험은 팀원과의 즐거운 협업 아래 진행됩니다 🧪</p>
             </section>
           </div>
