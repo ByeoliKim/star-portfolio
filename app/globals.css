@@ -85,9 +85,9 @@ body {
   font-family: 'Aggravo';
 }
 .text-stroke {
-  color: #ff5bb5;                 /* 글자 색 */
-  -webkit-text-stroke: 4px #ffe94a; /* 외곽선 두께 + 색 (크롬/사파리) */
-  text-stroke: 4px #ffe94a;         /* 표준(지원 브라우저 거의 없음, 그냥 같이 적는 용도) */
+  color: #ff84b4;                 /* 글자 색 */
+  -webkit-text-stroke: 3px #3f3f3e; /* 외곽선 두께 + 색 (크롬/사파리) */
+  text-stroke: 3px #ffe94a;         /* 표준(지원 브라우저 거의 없음, 그냥 같이 적는 용도) */
 }
 .text-rotate {
   transform: rotate3d(1, 1, 1, -5deg);
