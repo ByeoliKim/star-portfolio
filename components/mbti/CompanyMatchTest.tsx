@@ -89,14 +89,14 @@ export function CompanyMatchTest() {
               return (
                 <>
                   <div className="rounded-2xl bg-[#D4E4F1] px-4 py-3 border-[3px] border-[#252849]">
-                    <p className="text-xs font-bold text-[#252849]/80">
+                    <p className="text-md font-bold text-[#252849]/80">
                       이 테스트는 회사와 김별이 지원자의 궁합을 알아보는
                       재미있고 간단한 테스트였습니다.
                     </p>
-                    <p className="text-xs font-medium text-[#252849]/70">
+                    <p className="text-md font-medium text-[#252849]/70">
                       어떤 결과가 나오든, 결론은 하나입니다.
-                      <span className="font-semibold text-sm">
-                        “저는 같이 일하기 좋은 동료입니다. 😎”
+                      <span className="font-semibold text-lg">
+                        {""} “저는 같이 일하기 좋은 동료입니다. 😎”
                       </span>
                     </p>
                   </div>
@@ -108,10 +108,10 @@ export function CompanyMatchTest() {
                     <h3 className="text-lg font-extrabold text-[#252849]">
                       {result.title}
                     </h3>
-                    <p className="text-xs font-semibold text-[#252849]/80">
+                    <p className="text-md font-semibold text-[#252849]/80">
                       {result.subtitle}
                     </p>
-                    <p className="mt-3 text-md leading-relaxed text-[#252849] whitespace-pre-wrap">
+                    <p className="mt-3 text-lg leading-relaxed text-[#252849] whitespace-pre-wrap">
                       {result.description}
                     </p>
                   </div>
