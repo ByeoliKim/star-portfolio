@@ -5,6 +5,7 @@ Next.js / TypeScript / Tailwind CSS / Zustand 기반으로 만든 자기소개 �
 
 
 ## 🔗 배포
+<a href="https://kimstar-portfolio.vercel.app/" target="_blank">김별이 연구소 바로 가기 ⭐</a>
 
 - 주요 페이지
   - `/mbti` : 회사와 나의 궁합 알아보기 (MBTI 느낌 테스트)
