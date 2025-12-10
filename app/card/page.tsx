@@ -1,60 +1,111 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
 import Image from "next/image";
 import starIcon from "@/public/assets/star.png";
 
-type DecoId = "none" | "star" | "star2" | "heart" | "note";
+type StickerType = "star" | "star2" | "heart" | "note";
 
-type DecoOption = {
-  id: DecoId;
-  label: string;
-  emoji: string;
+type Sticker = {
+  id: string;
+  type: StickerType;
+  x: number;
+  y: number;
 };
 
-const decoOptions: DecoOption[] = [
-  {
-    id: "none",
-    label: "사용 안 함",
-    emoji: "",
-  },
-  {
-    id: "star",
-    label: "별 스티커",
-    emoji: "⭐",
-  },
-  {
-    id: "star2",
-    label: "별 스티커2",
-    emoji: "✨",
-  },
-  { id: "heart", label: "하트", emoji: "🩷" },
-  { id: "note", label: "음표", emoji: "🎵" },
+const STICKER_TYPES: { type: StickerType; label: string; emoji: string }[] = [
+  { type: "star", label: "별 스티커", emoji: "⭐" },
+  { type: "star2", label: "별 스티커2", emoji: "✨" },
+  { type: "heart", label: "하트", emoji: "💗" },
+  { type: "note", label: "음표", emoji: "🎵" },
 ];
 
 const bgPresets = [
-  { value: "#FFFDF5", label: "아이보리" },
+  { value: "#FFFDF5", label: "따뜻한 아이보리" },
   { value: "#FFE7FF", label: "연보라+핑크", grad: true },
-  { value: "#E3F4FF", label: "연하늘" },
-  { value: "#FFF4D6", label: "라이트 옐로우" },
-  { value: "#DFF9E8", label: "라이트 민트" },
+  { value: "#E3F4FF", label: "하늘하늘" },
+  { value: "#FFF4D6", label: "노랑노랑" },
+  { value: "#DFF9E8", label: "민트민트" },
 ];
 
 export default function Card() {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const [bgColor, setBgColor] = useState<string>("FFFDF5");
+  const dragBoundsRef = useRef<DOMRect | null>(null);
+
+  const [bgColor, setBgColor] = useState<string>("#FFFDF5");
   const [useGradient, setUseGradient] = useState<boolean>(false);
   const [phone, setPhone] = useState<string>("");
   const [name, setName] = useState<string>("김별이");
-  const [deco1, setDeco1] = useState<DecoId>("star");
-  const [deco2, setDeco2] = useState<DecoId>("star2");
-  const [deco3, setDeco3] = useState<DecoId>("note");
+
+  const [stickers, setStickers] = useState<Sticker[]>([]);
+  const [activeSticker, setActiveSticker] = useState<StickerType | null>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+
   const [downloading, setDownloading] = useState(false);
 
-  const getDecoById = (id: DecoId) =>
-    decoOptions.find((d) => d.id === id) || decoOptions[0];
+  const addSticker = (type: StickerType) => {
+    setStickers((prev) => [
+      ...prev,
+      {
+        id: `${type}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        type,
+        x: 50 + (Math.random() * 20 - 10),
+        y: 50 + (Math.random() * 20 - 10),
+      },
+    ]);
+  };
 
+  useEffect(() => {
+    if (!draggingId) return;
+
+    const handleMove = (e: PointerEvent) => {
+      if (!dragBoundsRef.current) return;
+      const rect = dragBoundsRef.current;
+
+      const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+      const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+
+      const clampedX = Math.max(0, Math.min(100, xPercent));
+      const clampedY = Math.max(0, Math.min(100, yPercent));
+
+      setStickers((prev) =>
+        prev.map((s) =>
+          s.id === draggingId ? { ...s, x: clampedX, y: clampedY } : s
+        )
+      );
+    };
+
+    const handleUp = () => {
+      setDraggingId(null);
+    };
+
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+    window.addEventListener("pointercancel", handleUp);
+
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+      window.removeEventListener("pointercancel", handleUp);
+    };
+  }, [draggingId, setStickers]);
+
+  const handleStickerPointerDown = (
+    e: React.PointerEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!cardRef.current) return;
+    dragBoundsRef.current = cardRef.current.getBoundingClientRect();
+    setDraggingId(id);
+
+    // 모바일에서 pointercapture 잡아두면 더 안정적
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  // png 로 다운로드 기능
   const handleDownload = async () => {
     if (!cardRef.current || downloading) return;
 
@@ -63,15 +114,33 @@ export default function Card() {
 
       const node = cardRef.current;
 
+      // 렌더링 안정화를 위해 두 프레임 정도 기다리기
+      await new Promise((r) =>
+        requestAnimationFrame(() => requestAnimationFrame(r))
+      );
+
+      // 워밍업 캡처 (결과는 버림)
+      try {
+        await htmlToImage.toPng(node, {
+          cacheBust: false,
+          pixelRatio: 2,
+        });
+      } catch (e) {
+        console.warn("warmup capture failed (무시 가능):", e);
+      }
+
+      // 더 대기하면 모바일에서 특히 도움됨
+      await new Promise((r) => setTimeout(r, 120));
+
       // html-to-image 사용
       const dataUrl = await htmlToImage.toPng(node, {
-        cacheBust: true,
-        pixelRatio: 2, // 해상도 업
+        cacheBust: false,
+        pixelRatio: 2,
       });
 
       const link = document.createElement("a");
       link.href = dataUrl;
-      link.download = `business-card-${Date.now()}.png`;
+      link.download = `business-card-kimbyeoli.png`;
       link.click();
     } catch (error) {
       console.error(error);
@@ -81,17 +150,24 @@ export default function Card() {
     }
   };
 
+  const clearStickers = () => {
+    setStickers([]);
+    setActiveSticker(null); // 스티커 선택 active 제거
+  };
+  const getEmoji = (type: StickerType) =>
+    STICKER_TYPES.find((s) => s.type === type)?.emoji || "⭐";
+
   return (
-    <main className="min-h-screen relative mt-16 mx-auto">
-      <h1 className="mt-1 px-4 md:px-0 lg:px-0 text-5xl md:text-7xl lg:text-7xl tracking-tight text-[#222] font-custom font-black text-center">
+    <main className="min-h-screen relative mt-20 md:mt-16 lg:mt-16 mx-auto">
+      <h1 className="mt-1 px-4 md:px-0 lg:px-0 text-4xl md:text-7xl lg:text-7xl tracking-tight text-[#222] font-custom font-black text-center">
         김별이 명함 저장
       </h1>
-      <div className="w-full max-w-5xl grid gap-8 md:grid-cols-[1.3fr,1fr] mt-25 md:mt-16 lg:mt-16 p-10">
+      <div className="w-full max-w-5xl grid gap-8 md:grid-cols-[1.3fr,1fr] mt-25 md:mt-16 lg:mt-16 p-0 md:p-10 lg:p-10">
         {/* 명함 프리뷰 */}
         <section className="flex flex-col items-center gap-4">
           <div
             ref={cardRef}
-            className="relative max-w-md aspect-video border border-[#000000] w-[300px] h-[400px] bg-white overflow-hidden flex items-center justify-center"
+            className="relative max-w-md aspect-video border border-black/20 w-[300px] h-[400px] bg-white overflow-hidden touch-none flex items-center justify-center"
             style={{
               background: useGradient
                 ? "linear-gradient(135deg,#FFE7FF,#E3F4FF)"
@@ -103,8 +179,16 @@ export default function Card() {
               {/* 상단 영역 */}
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <div className="">
-                    <Image src={starIcon} alt="star icon" width={130} />
+                  {/* next 이미지 로더 때문에 간헐적으로 저장이 같이 안 되는 이슈 때문에 img 태그로 대체  */}
+                  <div className="ImgWrap">
+                    {/* <Image src={starIcon} alt="star icon" width={130} /> */}
+                    <img
+                      src={starIcon.src}
+                      alt="star icon"
+                      width={130}
+                      height={130}
+                      className="block"
+                    />
                   </div>
                   <p className="text-lg font-normal tracking-tighter">
                     3년차 웹프론트엔드 개발자
@@ -113,13 +197,6 @@ export default function Card() {
                     {name}
                   </p>
                 </div>
-
-                {/* 데코1: 오른쪽 위 */}
-                {deco1 !== "none" && (
-                  <span className="text-3xl drop-shadow-[0_2px_0_rgba(0,0,0,0.25)]">
-                    {getDecoById(deco1).emoji}
-                  </span>
-                )}
               </div>
 
               {/* 소개 영역 */}
@@ -134,7 +211,7 @@ export default function Card() {
                 </p>
               </div>
 
-              {/* 하단 정보 + 데코2/3 */}
+              {/* 하단 정보 */}
               <div className="flex items-end justify-between">
                 <div className="space-y-1 text-[11px]">
                   <p className="font-semibold">
@@ -152,22 +229,23 @@ export default function Card() {
                     <span className="font-medium">github.com/ByeoliKim</span>
                   </p>
                 </div>
-
-                <div className="flex flex-col items-end gap-2 pr-1">
-                  {/* 데코2: 오른쪽 아래 아이콘 */}
-                  {deco2 !== "none" && (
-                    <span className="text-2xl drop-shadow-[0_2px_0_rgba(0,0,0,0.25)]">
-                      {getDecoById(deco2).emoji}
-                    </span>
-                  )}
-                  {/* 데코3: 살짝 겹치게 */}
-                  {deco3 !== "none" && (
-                    <span className="text-xl translate-x-3 translate-y-1 drop-shadow-[0_2px_0_rgba(0,0,0,0.25)]">
-                      {getDecoById(deco3).emoji}
-                    </span>
-                  )}
-                </div>
               </div>
+              {/* 드래그 가능한 스티커들 */}
+              {stickers.map((sticker) => (
+                <button
+                  key={sticker.id}
+                  type="button"
+                  onPointerDown={(e) => handleStickerPointerDown(e, sticker.id)}
+                  className="absolute cursor-move select-none text-3xl drop-shadow-[0_2px_0_rgba(0,0,0,0.25)]"
+                  style={{
+                    left: `${sticker.x}%`,
+                    top: `${sticker.y}%`,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  {getEmoji(sticker.type)}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -179,18 +257,26 @@ export default function Card() {
           >
             {downloading ? "이미지 생성 중..." : "이미지(PNG)로 저장하기"}
           </button>
-          <p className="text-sm text-[#252849]/60">
-            * PC에서는 자동 다운로드, 모바일은 이미지 보기 후 저장하세요.
+          <button
+            type="button"
+            onClick={clearStickers}
+            className="rounded-full bg-white border border-black/20 px-4 py-1.5 text-xs font-medium text-[#000000] cursor-pointer"
+          >
+            스티커 모두 지우기
+          </button>
+          <p className="text-xs text-black/60 px-6">
+            * 스티커는 클릭해서 추가하고, 카드 위에서 드래그해서 위치를 조정할
+            수 있어요.
           </p>
         </section>
 
         {/* 컨트롤 패널 */}
-        <section className=" bg-white/70 p-5 flex flex-col gap-5">
+        <section className=" bg-white/70 p-5 flex flex-col gap-5 border-dotted border border-black/10 m-2">
           <h2 className="text-lg font-medium text-[#000000]">명함 꾸미기 🎨</h2>
 
           {/* 배경 선택 */}
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-[#252849]">
+            <p className="text-md font-semibold text-black/80 tracking-tight">
               1. 배경 색 선택
             </p>
             <div className="flex flex-wrap gap-2">
@@ -202,9 +288,9 @@ export default function Card() {
                     setBgColor(bg.value);
                     setUseGradient(!!bg.grad);
                   }}
-                  className={`h-9 rounded-full border border-[#000000] px-3 text-sm font-semibold flex items-center gap-2 cursor-pointer ${
+                  className={`h-9 rounded-full border border-black/20 px-3 text-sm font-semibold flex items-center gap-2 cursor-pointer ${
                     bgColor === bg.value && useGradient === !!bg.grad
-                      ? "ring-2 ring-[#FF8BC2]"
+                      ? "ring-2 ring-[#c9c9c9]"
                       : ""
                   }`}
                   style={{
@@ -218,56 +304,35 @@ export default function Card() {
               ))}
             </div>
           </div>
-
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-[#252849]">2. 요소 선택</p>
-            <DecoSelect
-              label="요소 1 (오른쪽 상단)"
-              value={deco1}
-              onChange={setDeco1}
-            />
-            <DecoSelect
-              label="요소 2 (오른쪽 하단)"
-              value={deco2}
-              onChange={setDeco2}
-            />
-            <DecoSelect
-              label="요소 3 (요소2 옆)"
-              value={deco3}
-              onChange={setDeco3}
-            />
+          {/* 스티커 팔레트 */}
+          <div className="space-y-2">
+            <p className="text-md font-semibold text-black/80 tracking-tight">
+              2. 스티커 선택 후 카드 위에 놓고 드래그해서 꾸미기
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {STICKER_TYPES.map((s) => (
+                <button
+                  key={s.type}
+                  type="button"
+                  onClick={() => {
+                    setActiveSticker(s.type);
+                    addSticker(s.type);
+                  }}
+                  className={`flex items-center gap-1 rounded-full border h-9 border-black/20 bg-white px-3 py-1 text-xs font-semibold cursor-pointer ${
+                    activeSticker === s.type ? "ring-2 ring-[#c9c9c9]" : ""
+                  }`}
+                >
+                  <span>{s.emoji}</span>
+                  <span>{s.label}</span>
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-[#000000]/60">
+              * 같은 스티커 여러 개도 추가할 수 있어요. (예: 하트 도배 ❤️)
+            </p>
           </div>
         </section>
       </div>
     </main>
-  );
-}
-
-type DecoSelectProps = {
-  label: string;
-  value: DecoId;
-  onChange: (id: DecoId) => void;
-};
-
-function DecoSelect({ label, value, onChange }: DecoSelectProps) {
-  return (
-    <div className="space-y-1">
-      <p className="text-[11px] font-semibold text-[#252849]/80">{label}</p>
-      <div className="flex flex-wrap gap-2">
-        {decoOptions.map((opt) => (
-          <button
-            type="button"
-            key={opt.id}
-            onClick={() => onChange(opt.id)}
-            className={`flex items-center gap-1 rounded-full border border-[#000000] bg-white px-3 py-1 text-sm font-semibold cursor-pointer ${
-              opt.id === value ? "bg-[#FFE7FF]" : ""
-            }`}
-          >
-            <span>{opt.emoji || "⛔"}</span>
-            <span>{opt.label}</span>
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }
