@@ -1,11 +1,18 @@
+"use client";
 import Header from "@/components/layout/Header";
+import { motion } from "framer-motion";
 
 export default function Home() {
   return (
     <>
       <Header />
       {/* 콘텐츠 영역 */}
-      <div className="relative z-10 px-6 pb-8 pt-2 md:px-10 md:pb-12 md:pt-2">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+        className="relative z-10 px-6 pb-8 pt-2 md:px-10 md:pb-12 md:pt-2"
+      >
         <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr,1fr]">
           <div className="space-y-4">
             {/* 자기소개 메모 */}
@@ -119,7 +126,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-      </div>
+      </motion.div>
     </>
   );
 }

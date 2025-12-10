@@ -2,12 +2,18 @@
 
 import Link from "next/link";
 import Profile from "./Profie";
+import { motion } from "framer-motion";
 
 export default function Header() {
   return (
     <>
       {/* 타이틀 영역 */}
-      <section className="relative flex flex-col pt-10 px-6 md:flex-row md:items-end md:justify-between lg:justify-evenly">
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="relative flex flex-col pt-10 px-6 md:flex-row md:items-end md:justify-between lg:justify-evenly"
+      >
         <div className="space-y-3">
           <ul className="flex justify-between md:justify-start lg:justify-start gap-2 tracking-tighter sm:text-md md:text-xl lg:text-xl text-black/70 font-semibold">
             <li className="hover:text-black/90 transition-colors border-b">
@@ -31,7 +37,7 @@ export default function Header() {
           </div>
         </div>
         <Profile />
-      </section>
+      </motion.section>
     </>
   );
 }

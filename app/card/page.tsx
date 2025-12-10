@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
-import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import starIcon from "@/public/assets/star.png";
 
 type StickerType = "star" | "star2" | "heart" | "note";
@@ -159,13 +159,18 @@ export default function Card() {
 
   return (
     <main className="min-h-screen relative mt-20 md:mt-16 lg:mt-16 mx-auto">
-      <h1 className="mt-1 px-4 md:px-0 lg:px-0 text-4xl md:text-7xl lg:text-7xl tracking-tight text-[#222] font-custom font-black text-center">
+      <motion.h1
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.1, ease: "easeIn" }}
+        className="mt-1 px-4 md:px-0 lg:px-0 text-4xl md:text-7xl lg:text-7xl tracking-tight text-[#222] font-custom font-black text-center"
+      >
         김별이 명함 저장
-      </h1>
+      </motion.h1>
       <div className="w-full max-w-5xl grid gap-8 md:grid-cols-[1.3fr,1fr] mt-25 md:mt-16 lg:mt-16 p-0 md:p-10 lg:p-10">
         {/* 명함 프리뷰 */}
         <section className="flex flex-col items-center gap-4">
-          <div
+          <motion.div
             ref={cardRef}
             className="relative max-w-md aspect-video border border-black/20 w-[300px] h-[400px] bg-white overflow-hidden flex items-center justify-center"
             style={{
@@ -173,6 +178,9 @@ export default function Card() {
                 ? "linear-gradient(135deg,#FFE7FF,#E3F4FF)"
                 : bgColor,
             }}
+            initial={{ opacity: 0, scale: 0.96, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.35, ease: "easeIn" }}
           >
             {/* 내부 레이아웃 */}
             <div className="relative h-full w-full px-6 py-5 flex flex-col justify-between text-[#00000]">
@@ -232,7 +240,7 @@ export default function Card() {
               </div>
               {/* 드래그 가능한 스티커들 */}
               {stickers.map((sticker) => (
-                <button
+                <motion.button
                   key={sticker.id}
                   type="button"
                   onPointerDown={(e) => handleStickerPointerDown(e, sticker.id)}
@@ -243,12 +251,15 @@ export default function Card() {
                     top: `${sticker.y}%`,
                     transform: "translate(-50%, -50%)",
                   }}
+                  initial={{ scale: 0, opacity: 0, rotate: -8 }}
+                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 18 }}
                 >
                   {getEmoji(sticker.type)}
-                </button>
+                </motion.button>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           <button
             type="button"
@@ -258,13 +269,14 @@ export default function Card() {
           >
             {downloading ? "이미지 생성 중..." : "이미지(PNG)로 저장하기"}
           </button>
-          <button
+          <motion.button
             type="button"
             onClick={clearStickers}
+            whileTap={{ scale: 0.96, y: 1 }}
             className="rounded-full bg-white border border-black/20 px-4 py-1.5 text-xs font-medium text-[#000000] cursor-pointer"
           >
             스티커 모두 지우기
-          </button>
+          </motion.button>
           <p className="text-xs text-black/60 px-6">
             * 스티커는 클릭해서 추가하고, 카드 위에서 드래그해서 위치를 조정할
             수 있어요.
@@ -312,7 +324,8 @@ export default function Card() {
             </p>
             <div className="flex flex-wrap gap-2">
               {STICKER_TYPES.map((s) => (
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
                   key={s.type}
                   type="button"
                   onClick={() => {
@@ -325,7 +338,7 @@ export default function Card() {
                 >
                   <span>{s.emoji}</span>
                   <span>{s.label}</span>
-                </button>
+                </motion.button>
               ))}
             </div>
             <p className="text-xs text-[#000000]/60">
