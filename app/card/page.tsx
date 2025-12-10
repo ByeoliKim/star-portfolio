@@ -167,7 +167,7 @@ export default function Card() {
         <section className="flex flex-col items-center gap-4">
           <div
             ref={cardRef}
-            className="relative max-w-md aspect-video border border-black/20 w-[300px] h-[400px] bg-white overflow-hidden touch-none flex items-center justify-center"
+            className="relative max-w-md aspect-video border border-black/20 w-[300px] h-[400px] bg-white overflow-hidden flex items-center justify-center"
             style={{
               background: useGradient
                 ? "linear-gradient(135deg,#FFE7FF,#E3F4FF)"
@@ -238,6 +238,7 @@ export default function Card() {
                   onPointerDown={(e) => handleStickerPointerDown(e, sticker.id)}
                   className="absolute cursor-move select-none text-3xl drop-shadow-[0_2px_0_rgba(0,0,0,0.25)]"
                   style={{
+                    touchAction: "none",
                     left: `${sticker.x}%`,
                     top: `${sticker.y}%`,
                     transform: "translate(-50%, -50%)",
