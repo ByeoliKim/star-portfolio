@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌟 김별이 연구소
+ 
+> “회사와 나의 궁합 테스트 + 명함 꾸미기”로 풀어낸 인터랙티브 포트폴리오
 
-## Getting Started
+Next.js / TypeScript / Tailwind CSS / Zustand 기반으로 만든 개인 포트폴리오입니다.  
+채용 담당자님이 제 성향과 작업 스타일을 자연스럽게 볼 수 있도록 설계했어요.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🔗 배포
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 주요 페이지
+  - `/mbti` : 회사와 나의 궁합 알아보기 (MBTI 느낌 테스트)
+  - `/card` : 명함 꾸미기 & PNG 이미지 저장
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ 주요 기능
 
-## Learn More
+### 1. 자기소개 랜딩 페이지
 
-To learn more about Next.js, take a look at the following resources:
+- 간단한 소개, 역할, 작업 스타일을 한 눈에 볼 수 있는 섹션
+- Next.js App Router 기반 레이아웃
+- Tailwind로 반응형 구성 (모바일 / 태블릿 / 데스크탑)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. 회사와 나의 궁합 알아보기 (`/mbti`)
 
-## Deploy on Vercel
+> “이 회사와 별이는 잘 맞을까요?”를  
+> 5문항 테스트로 풀어낸 가벼운 궁합 테스트
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Zustand**로 질문·답변·결과 상태 관리
+- 5개의 질문에 답하면, 회사 타입에 따라 다음과 같은 결과 중 하나 노출
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+  - `steady` : 단단한 기둥형 팀과 잘 맞는 타입  
+  - `spark` : 아이디어가 활발한 팀과 잘 맞는 타입  
+  - `bridge` : 소통 중심의 팀과 잘 맞는 타입  
+  - `craft` : 디테일·퀄리티를 중시하는 팀과 잘 맞는 타입  
+  - `growth` : 성장 지향적인 팀과 잘 맞는 타입  
+
+- 하지만 결론은 항상 하나입니다:
+
+  > “어떤 타입이든, 이 회사와 별이는 잘 맞습니다”  
+  > → **복잡한 성향 설명 대신, 협업 관점에서 강점을 강조**
+
+---
+
+### 3. 명함 꾸미기 & 저장하기 (`/card`)
+
+> 사용자가 직접 **별이 명함을 꾸미고, PNG로 저장**해볼 수 있는 페이지
+
+#### 기능
+
+- 배경 선택
+  - 5가지 프리셋
+  - 그라데이션 / 솔리드 컬러 선택 가능
+- 스티커 꾸미기
+  - 스티커 타입: ⭐ 별, ✨ 별2, 💗 하트, 🎵 음표
+  - 스티커는 더 추가할 예정 *
+  - **드래그로 위치 조정 (PC + 모바일 모두 대응)**
+- PNG 이미지로 저장
+  - `html-to-image` 라이브러리로 카드 영역만 캡처
+  - 배포 환경 / 모바일에서의 첫 캡처 이슈를 고려한 안정화 처리
+
+---
+
+## 🧰 Tech Stack
+
+- **Framework**
+  - Next.js (App Router)
+  - React
+  - TypeScript
+
+- **Styling**
+  - Tailwind CSS
+  - 반응형 레이아웃 (sm / md / lg 대응)
+
+- **State Management**
+  - Zustand (회사 궁합 테스트 로직 등)
+
+- **Etc**
+  - html-to-image (명함 영역 PNG로 내보내기)
+  - Pointer Events API (PC + 모바일 드래그 공통 처리)
+
+---
+
+## 🧱 폴더 구조
+
+```txt
+src/
+├─ app/
+│  ├─ page.tsx              # 메인 자기소개 페이지
+│  ├─ mbti/
+│  │  └─ page.tsx           # 회사와 나의 궁합 테스트 페이지
+│  ├─ card/
+│  │  └─ page.tsx           # 명함 꾸미기 & PNG 저장 페이지
+│  └─ globals.css           # Tailwind 및 전역 스타일
+├─ store/
+│  └─ companyMatchStore.ts  # Zustand 기반 궁합 테스트 상태 관리
+└─ public/
+   └─ assets/
+      └─ star.png           # 명함 상단 아이콘 이미지
