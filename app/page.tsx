@@ -61,7 +61,7 @@ export default function Home() {
                   <li>하프 마라톤 완주 기록 02:25:57 🏃‍♀️</li>
                   <li>
                     리그오브레전드 포지션 정글 서포터{" "}
-                    <span className="text-black/60">실버4 달성</span>
+                    <span className="text-black/60">실버2 달성</span>
                   </li>
                   <li>로스트아크 6 서포터 육성 중</li>
                 </ul>
